@@ -15,7 +15,7 @@ function App() {
 			</div>
 			<Toaster
 				toastOptions={{
-					duration: 2000,
+					duration: 1000,
 				}}
 			/>
 		</>

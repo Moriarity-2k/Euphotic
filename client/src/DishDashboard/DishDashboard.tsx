@@ -23,6 +23,7 @@ function DishDashboard() {
 	// Initialize state to hold dishes
 	const [dishes, setDishes] = useState<IDish[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [btnLoading, setBtnLoading] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
 	// Fetch dishes and set up WebSocket on component mount
@@ -79,15 +80,9 @@ function DishDashboard() {
 
 	// Function to toggle the published state of a dish
 	const togglePublished = async (id: string) => {
+		setBtnLoading(id);
 		try {
 			await axios.post(`${base_url}/api/dishes/${id}/toggle`);
-			setDishes((prevDishes) =>
-				prevDishes.map((dish) =>
-					dish._id === id
-						? { ...dish, isPublished: !dish.isPublished }
-						: dish
-				)
-			);
 			toast(
 				<div className="josefin-slab-bold lowercase py-4 px-4 rounded-sm space-y-1 border-bottom-animate">
 					<div className="font-mono text-green-600">Success 🎉🎉</div>
@@ -103,6 +98,8 @@ function DishDashboard() {
 					</div>
 				</div>
 			);
+		} finally {
+			setBtnLoading(null);
 		}
 	};
 
@@ -164,9 +161,12 @@ function DishDashboard() {
 						{/* Toggle published button */}
 						<button
 							onClick={() => togglePublished(dish._id)}
-							className="bg-blue-500 text-white border-none py-2 px-5 rounded cursor-pointer w-full box-border"
+							className="bg-blue-500 text-white border-none py-2 px-5 rounded cursor-pointer w-full box-border disabled:bg-slate-500"
+							disabled={btnLoading === dish._id}
 						>
-							Toggle Published
+							{btnLoading === dish._id
+								? "loading"
+								: "Toggle Published"}
 						</button>
 					</div>
 				))}
